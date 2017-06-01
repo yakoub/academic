@@ -1,0 +1,14 @@
+run make to build "vw" opengl progarm
+program draws a grid 50x50 , each mouse left click
+marks a point .
+it functions as editor for algorithm input file
+and viewer for output file 
+right click offers a menu of operations .
+write operation will produce targets.txt for 
+use as input to main program ( you must add 
+number of stalkers ) 
+most read operations require existence of 
+target.txt and solution.txt
+
+note: before choosing "read solution" you must
+choose "read targets"

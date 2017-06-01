@@ -1,0 +1,54 @@
+program developed using mpich2
+
+compile using make command ,output is file: cluster 
+makefile uses mpicc that is installed by mpich2
+
+run cluster using : mpiexec -n {NUM_OF_CLUSTER+1} cluster
+mpiexec is installed by mpich2
+
+program main operation can be seen clearly in cluster.c
+it run monitor program + several clusters
+
+monitor will read input file "targets.txt" and 
+run scatter function to partition targets and
+assign each partition to a cluster program .
+you can view output of partition algorithm
+using seq/scatter.c program and gui/vw
+monitor uses sequential operation to partition , 
+then sends targets and edges to the assigned 
+cluster using MPI_Send , MPI_Recv
+monitor proceeds to monitor cluster activity
+and is responsible for announcing termination 
+to all clusters , also it holds the final solution
+and outputs it partly to file "solution.txt" 
+and partly to stdout
+
+stalkers are divided equally between clusters at
+start of algorithm , so each cluster will
+spawn several stalkers as threads using pthread functions ,
+stalker related functions is at stalker.c .
+in adition to spawning stalkers , the starting thread
+continues to run mpi_inbox which is at mpi_inbox.c .
+each stalker uses cluster local targets structure
+-which is defined in cluster.h- to construct its path .
+at each point a stalker needs to choose next target ,
+and it does that using sorted distances and number 
+of samples of each target and avergae samples of all targets .
+sorted distances aims to optemize total sampling ,
+while average samples aims to optemize each target samples .
+the macro value on stalker.c AVRG_FACTOR will affect
+the ratio between those two goals.
+
+mpi_inbox handles main mpi operations which consist
+of stalker requesting samples of target from another cluster
+and stalker passing to target belonging to another cluster .
+when a stalker decide to pass cluster it sends its current 
+trail to monitor
+see cluster.h for list of mpi call tags
+
+when all stalkers stop monitor will output solution
+use program under gui directory to view solution , read gui/README
+
+input files targets.txt must have number of targets 
+and number of stalkers and time period at first line , then target 
+coordinats each at a new line .
