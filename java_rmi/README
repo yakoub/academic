@@ -1,0 +1,60 @@
+yakoub abaya    yabaya@study.haifa.ac.il
+
+<Running>
+---------
+1)start rmiregistery
+
+2)deploy Ass4.war at tomcat server .
+edit web.xml to and enter rmiIP value .(default is localhost )
+
+3)
+use StartClusters.java to start Clusters but first
+edit initfile.txt for entering rmiregistery URL
+
+4)browse the site at /Ass4/index.html
+
+<Design>
+---------
+RecommenderSystem class is the web servelet that service
+Active users Recomendation html requests 
+
+the class init method uses a remoteHook object
+to wait for all clusters to register at rmiregistry as rmi servers.
+it registers the remoteHook object at rmiregistry
+so that a Cluster uses rmi to get refference to remotwHook
+and notify the servelet of its registration
+
+
+<remote Objects>
+----------------
+[remoteHook]
+	implements remote interface HookInterface
+	remoteHook is used to initielize the system so that clusters
+	would notify the system of there existence
+
+[RequestImpl]
+	implements remote interface Request
+	the RequestImpl is created in the system and 
+	registered at as an rmi server so that clusters
+	can get the Request info .
+	the system use Request method notFinished to block
+	untill the Request is finished.
+	each Cluster that finished registers its candidate
+	at the Request using te interface's method which
+	inturn notify the system of the registration
+
+[SuperUser] 
+	implmenets remote interface Cluster
+	the Cluster is an rmi server .
+	StartClusters class main method creats Clusters
+	according to HookInterface that is created by System.
+	RecomenderSystem has an array of refferences to Clusters
+	that is intielized after remoteObject notify about 
+	the registration of all the Clusters at rmi daemon
+
+--------------
+all Clusters and other remote objects are registered at 
+the same rmi daemon , inorder to use different rmi daemon URLs
+all remote objects needs to pass to the system the URL
+using HookInterface , but this was not imlemented .
+
